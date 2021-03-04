@@ -7,6 +7,8 @@ use App\Models\TaskImage;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use DateTime;
+
+use Intervention\Image\ImageManagerStatic as Image;
 // use Image;
 
 
@@ -79,15 +81,16 @@ class TaskController extends Controller
               $i = 0;
               foreach ($request->task_image as $image) {
 
-                //insert that image
-                //$image = $request->file('task_image');
+                
                 $imageName = time() . $i .'.'. $image->extension();
-                $image->move(public_path('images'), $imageName);
+
+                // $image->move(public_path('images'), $imageName);
                
 
-                // $location = 'images/' .$img;
+                 $location = 'images/' .$imageName;
 
-                // Image::make($image)->save($location);
+                 Image::make($image)->resize(320, 240)->save($location);
+
 
                 $task_img = new TaskImage();
                 $task_img->task_id = $task->id;
@@ -150,9 +153,14 @@ class TaskController extends Controller
     public function update(Request $request, $id)
     {
         //
-         $daten = Carbon::now();
+         
+          
+
          if(!is_null($request->task_date_time_chng))
             {
+                $daten = Carbon::now();
+                $request->task_date_time_chng=date('Y-m-d H:i:s', strtotime($request->task_date_time_chng ));
+
                  $validated=$request->validate(
                     [
                      

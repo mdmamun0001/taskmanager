@@ -4,7 +4,7 @@
 
 <!-- all task display start-->
  <section class="">
- 	<div class="container-fluid">
+ 	<div class="container-fluid ">
  		<div class="row justify-content-center">
  			<div class="col-md-10">
  				@include('partials.message')

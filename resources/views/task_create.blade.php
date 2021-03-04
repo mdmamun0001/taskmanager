@@ -1,23 +1,21 @@
 @extends('layouts.master')
 @section('title', 'taskManagerApp')
 @section('link')
-
-<link rel="stylesheet" type="text/css" href="{{ asset('css/app.css')}}">
   <link rel="stylesheet" type="text/css" href="{{asset('jq-plugin/datetimepicker-master/jquery.datetimepicker.css')}}"/ >
 @stop
 @section('content')
 <!-- a new task creation start-->
- <section class="">
+ <section class=" task_create">
  	<div class="container">
  		<div class="row justify-content-center">
- 			<div class="col-md-6">
+ 			<div class="col-md-7 ">
  				
-			      <div class="card">
+			      <div class="card task_create_card">
 			        <div class="card-header">
 			          Add New Task
 			        </div>
 			        <div class="card-body">
-			          <form action="{{ route('tasks.store')}}" method="post" enctype="multipart/form-data">
+			          <form  name="task_form"  action="{{ route('tasks.store')}}" onsubmit=" return validateForm()" method="post" enctype="multipart/form-data">
 			            @csrf
 			            <div class="form-group">
 			              <label for="title">Title</label>
@@ -34,6 +32,7 @@
                         <div class="form-group">
 			              <label for="datetimepicker">Assign date with time</label>
 			              <input type="text" class="form-control @error('task_date_time') is-invalid @enderror" name="task_date_time" id="datetimepickers" required >
+			              <p id="timeError"></p>
 			              @error('task_date_time')
 							<div class="alert alert-danger">{{ $message }}</div>
 						  @enderror
@@ -79,6 +78,7 @@
  	</div>
  </section>
 <!-- a new task creation  end-->
+@include('partials.task_form_validation')
 @include('partials.datetime_picker_script')
 
 @stop

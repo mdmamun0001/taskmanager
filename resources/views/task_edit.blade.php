@@ -1,19 +1,22 @@
 @extends('layouts.master')
 @section('title', 'taskManagerApp')
+@section('link')
+  <link rel="stylesheet" type="text/css" href="{{asset('jq-plugin/datetimepicker-master/jquery.datetimepicker.css')}}"/ >
+@stop
 @section('content')
 
 <!-- a new task creation start-->
  <section class="">
  	<div class="container">
  		<div class="row justify-content-center">
- 			<div class="col-md-6">
+ 			<div class="col-md-7">
  				
 			      <div class="card">
 			        <div class="card-header">
 			          Add New Task
 			        </div>
 			        <div class="card-body">
-			          <form action="{{ route('tasks.update',$task->id)}}" method="post" enctype="multipart/form-data">
+			          <form name="task_form" action="{{ route('tasks.update',$task->id)}}" onsubmit=" return validateForm()" method="post" enctype="multipart/form-data">
 			            @csrf
 			            @method('PUT')
 			            <div class="form-group">
@@ -27,8 +30,8 @@
 			            </div>
 			              <p> Assigned on: <strong> {{date('d F Y', strtotime($task->task_date_time))}} at:{{date('g:i A', strtotime($task->task_date_time))}} </strong> </p>
                         <div class="form-group">
-			              <label for="task_date_time_chng">Change Assign date and time</label>
-			              <input type="datetime-local" class="form-control @error('task_date_time_chng') is-invalid @enderror" name="task_date_time_chng" id="task_date_time_chng" >
+			              <label for="datetimepickers">Change Assign date and time</label>
+			              <input type="text" class="form-control @error('task_date_time_chng') is-invalid @enderror" name="task_date_time_chng" id="datetimepickers" >
 			              @error('task_date_time_chng')
 							<div class="alert alert-danger">{{ $message }}</div>
 						  @enderror
@@ -77,10 +80,13 @@
 			          </form>
 			        </div>
 			      </div>
-			     <p class="text-right "> <a href="{{route('tasks.index')}}" class="btn btn-success " >Go back</a></p> 
+			     <!-- <p class="text-right "> <a href="{{route('tasks.index')}}" class="btn btn-success " >Go back</a></p>  -->
  			</div>
  		</div>
  	</div>
  </section>
 <!-- a new task creation  end-->
+@include('partials.task_form_validation')
+@include('partials.datetime_picker_script')
+
  @stop
