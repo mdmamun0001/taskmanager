@@ -16,12 +16,15 @@
 			          Add New Task
 			        </div>
 			        <div class="card-body">
-			          <form name="task_form" action="{{ route('tasks.update',$task->id)}}" onsubmit=" return validateForm()" method="post" enctype="multipart/form-data">
+			          <form name="task_form" action="{{ route('tasks.update',$task->id)}}" onsubmit=" return validateDate()" method="post" enctype="multipart/form-data">
 			            @csrf
 			            @method('PUT')
 			            <div class="form-group">
 			              <label for="title">Title</label>
-			              <input type="text" class="form-control" name="title" id="title" value="{{$task->title}}">
+			              <input type="text" class="form-control @error('title') is-invalid @enderror" name="title" id="title" value="{{$task->title}}">
+			              @error('title')
+							<div class="alert alert-danger">{{ $message }}</div>
+						  @enderror
 			            </div>
 
 			            <div class="form-group">
@@ -32,6 +35,7 @@
                         <div class="form-group">
 			              <label for="datetimepickers">Change Assign date and time</label>
 			              <input type="text" class="form-control @error('task_date_time_chng') is-invalid @enderror" name="task_date_time_chng" id="datetimepickers" >
+			              <p id="timeError"></p>
 			              @error('task_date_time_chng')
 							<div class="alert alert-danger">{{ $message }}</div>
 						  @enderror
@@ -47,23 +51,23 @@
 						  </div>
 
 						  <div class="form-group">
-			              <label for="task_image">Add Image</label>
+			              <label for="">Add Image</label>
 
 			              <div class="row">
 			                <div class="col-md-6">
-			                  <input type="file" class="form-control @error('task_image[]') is-invalid @enderror" name="task_image[]" id="task_image" >
+			                  <input type="file" class="form-control @error('task_image[]') is-invalid @enderror" name="task_image[]" id="" onchange="return imageValidation(this)" >
 			                </div>
 			                 @error('task_image[]')
 							<div class="alert alert-danger">{{ $message }}</div>
 						     @enderror
 			                <div class="col-md-6">
-			                  <input type="file" class="form-control" name="task_image[]" id="task_image" >
+			                  <input type="file" class="form-control" name="task_image[]" id="" onchange="return imageValidation(this)" >
 			                </div>
 			                <div class="col-md-6">
-			                  <input type="file" class="form-control" name="task_image[]" id="task_image" >
+			                  <input type="file" class="form-control" name="task_image[]" id="" onchange="return imageValidation(this)" >
 			                </div>
 			                <div class="col-md-6">
-			                  <input type="file" class="form-control" name="task_image[]" id="task_image" >
+			                  <input type="file" class="form-control" name="task_image[]" id="" onchange="return imageValidation(this)" >
 			                </div>
 			     
 			              </div>

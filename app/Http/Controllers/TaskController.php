@@ -7,6 +7,8 @@ use App\Models\TaskImage;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use DateTime;
+use App\Http\Requests\StoreTaskRequest;
+use App\Http\Requests\UpdateTaskRequest;
 
 use Intervention\Image\ImageManagerStatic as Image;
 // use Image;
@@ -23,8 +25,6 @@ class TaskController extends Controller
     {
         
         $tasks = Task::orderBy('task_date_time','asc')->get();
-
-
         return view('all_task', compact('tasks'));
     }
 
@@ -45,51 +45,45 @@ class TaskController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreTaskRequest $request)
     {
         
-        $date = Carbon::now();
-        $request->task_date_time=date('Y-m-d H:i:s', strtotime($request->task_date_time ));
+        
     
     // dd(date('Y-m-d H:i:s', strtotime($request->task_date_time )));
 
-      $request->validate(
-        [
-         'title' => 'required|max:100',
-         'task_date_time'=>'required|after:'.$date,
-         'task_image[]' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-         ],
+      // $request->validate(
+      //   [
+      //    'title' => 'required|max:100',
+      //    'task_date_time'=>'required|after:'.$date,
+      //    'task_image[]' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+      //    ],
 
-        [
-            'title.required' => 'Please give your task title',
-            'title.max' => 'Please give your task title within 100 character',
+      //   [
+            
+      //       'title.max' => 'Please give your task title within 100 character',
             
 
-        ]);
+      //   ]);
 
+        $validated = $request->validated();
 
         $task = new Task();
-        $task->title=$request->title;
-        $task->description=$request->description;
-        $task->task_date_time=date('Y-m-d H:i:s', strtotime($request->task_date_time ));
+        $task->title = $request->title;
+        $task->description = $request->description;
+        $task->task_date_time = date('Y-m-d H:i:s', strtotime($request->task_date_time ));
         $task->user_id=1;
         $task->save();
 
-      if(!is_null($request->task_image))
-      {
+      if (!is_null($request->task_image)) {
           if (count($request->task_image) > 0) {
               $i = 0;
-              foreach ($request->task_image as $image) {
+              foreach ($request->task_image as $image){
 
-                
                 $imageName = time() . $i .'.'. $image->extension();
-
-                // $image->move(public_path('images'), $imageName);
-               
-
-                 $location = 'images/' .$imageName;
-
-                 Image::make($image)->resize(320, 240)->save($location);
+                $location = 'images/' .$imageName;
+                Image::make($image)->resize(300, null, function ($constraint) {
+                     $constraint->aspectRatio();})->save($location);
 
 
                 $task_img = new TaskImage();
@@ -114,13 +108,12 @@ class TaskController extends Controller
     public function show($id)
     {
         //
-        $task= Task::find($id);
+        $task = Task::find($id);
         // $images= TaskImage::where('task_id', $task->id )->get();
-         $images=$task->image;
+         $images = $task->image;
 
 
-        if(! is_null($task))
-        {
+        if (! is_null($task)){
           return view('task_view', compact('task','images'));
         }
 
@@ -137,8 +130,7 @@ class TaskController extends Controller
         //
 
          $task= Task::find($id);
-        if(!is_null($task))
-        {
+        if (!is_null($task)){
             return view('task_edit', compact('task'));
         }
     }
@@ -150,44 +142,50 @@ class TaskController extends Controller
      * @param  \App\Models\Task  $task
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateTaskRequest $request, $id)
     {
         //
          
           
 
-         if(!is_null($request->task_date_time_chng))
-            {
-                $daten = Carbon::now();
-                $request->task_date_time_chng=date('Y-m-d H:i:s', strtotime($request->task_date_time_chng ));
+         // if (!is_null($request->task_date_time_chng)){
+         //        $daten = Carbon::now();
+         //        $request->task_date_time_chng=date('Y-m-d H:i:s', strtotime($request->task_date_time_chng ));
 
-                 $validated=$request->validate(
-                    [
+         //         $validated=$request->validate(
+         //            [
                      
-                     'task_date_time_chng' => 'required|after:'.$daten,
+         //             'task_date_time_chng' => 'required|after:'.$daten,
                      
-                     ]);
-            }
+         //             ]);
+         //    }
 
-            if(!is_null($request->task_image))
-                  {
-                    $validated = $request->validate(
-                        [
+         //    if (!is_null($request->task_image)){
+         //            $validated = $request->validate(
+         //                [
                          
-                         'task_image[]' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-                         ]);
+         //                 'task_image[]' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+         //                 ]);
                     
-                  }
+         //          }
 
+       //  $daten = Carbon::now();
+       // $request->validate(
+       //      [  
+       //         'title'=>'required',
+       //         'task_date_time_chng' => 'nullable|after:'.$daten,   
+       //         'task_image[]' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+       //       ]);
+
+
+
+        $validated = $request->validated();
         
-
-         
-
         $task=Task::find($id);
-          if(!is_null($task))
-        {
+          if(!is_null($task)){
             $task->title=$request->title;
             $task->description=$request->description;
+
             if(!is_null($request->task_date_time_chng))
             {
 
@@ -202,18 +200,17 @@ class TaskController extends Controller
             $task->user_id=1;
             $task->save();
 
-             if(!is_null($request->task_image))
-                  {
+             if (!is_null($request->task_image)){
 
-                    
-
-                      if (count($request->task_image) > 0) {
+                    if (count($request->task_image) > 0){
                           $i = 0;
-                          foreach ($request->task_image as $image) {
-
+                          foreach ($request->task_image as $image){
                             
                             $imageName = time() . $i .'.'. $image->extension();
-                            $image->move(public_path('images'), $imageName);
+                            $location = 'images/' .$imageName;
+                            Image::make($image)->resize(300, null, function ($constraint){
+                            $constraint->aspectRatio();})->save($location);
+
                             $task_img = new TaskImage();
                             $task_img->task_id = $task->id;
                             $task_img->image = $imageName;
@@ -244,15 +241,14 @@ class TaskController extends Controller
         $task= Task::find($id);
         $images=TaskImage::where('task_id',$id)->get();
 
-        if(!is_null($task))
-        {
+        if (!is_null($task)){
             $task->delete();
 
            //images delete
-            foreach ($images as $img) {
+            foreach ($images as $img){
             
               $file_name = $img->image;
-              if (file_exists("images/".$file_name)) {
+              if (file_exists("images/".$file_name)){
                 unlink("images/".$file_name);
               }
 
