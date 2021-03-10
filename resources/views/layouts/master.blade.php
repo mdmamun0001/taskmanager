@@ -13,6 +13,8 @@
 </head>
 <body>
 
+	@include('partials.nav_bar')
+
   @yield('content')
 
   

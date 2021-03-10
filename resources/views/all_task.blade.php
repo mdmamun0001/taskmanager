@@ -75,10 +75,14 @@
 				</table>
 
 				<h3 class="text-right"> <a href="{{ route('tasks.create')}}" class="btn btn-primary"> Add new Task</a> </h3>
+
+				<h3 class="text-right"> <a href="{{ route('send.mail.index')}}" class="btn btn-primary"> send email</a> </h3>
  			</div>
  		</div>
  	</div>
  </section>
+
+
 <!-- all task display end-->
   
 
@@ -87,6 +91,5 @@
 				      	date('g:i A', strtotime($task->task_date_time)) -->
 <!-- date('d F Y', strtotime($task->task_date_time)) -->
 
-
-
 @stop
+

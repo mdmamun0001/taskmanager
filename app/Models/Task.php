@@ -16,6 +16,7 @@ class Task extends Model
     	'user_id',
     	'task_date_time',
     	'is_completed',
+       
      ];
 
      public function image(){

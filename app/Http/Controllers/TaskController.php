@@ -12,7 +12,7 @@ use App\Http\Requests\UpdateTaskRequest;
 
 use Intervention\Image\ImageManagerStatic as Image;
 // use Image;
-
+use Auth;
 
 class TaskController extends Controller
 {
@@ -24,8 +24,13 @@ class TaskController extends Controller
     public function index()
     {
         
-        $tasks = Task::orderBy('task_date_time','asc')->get();
-        return view('all_task', compact('tasks'));
+
+            $tasks = Task::where('user_id',Auth::id())
+                     ->orderBy('task_date_time','asc')->get();
+            return view('all_task', compact('tasks'));
+       
+
+      
     }
 
     /**
@@ -72,10 +77,10 @@ class TaskController extends Controller
         $task->title = $request->title;
         $task->description = $request->description;
         $task->task_date_time = date('Y-m-d H:i:s', strtotime($request->task_date_time ));
-        $task->user_id=1;
+        $task->user_id=Auth::id();
         $task->save();
 
-      if (!is_null($request->task_image)) {
+      if (isset($request->task_image)) {
           if (count($request->task_image) > 0) {
               $i = 0;
               foreach ($request->task_image as $image){
@@ -186,7 +191,7 @@ class TaskController extends Controller
             $task->title=$request->title;
             $task->description=$request->description;
 
-            if(!is_null($request->task_date_time_chng))
+            if(isset($request->task_date_time_chng))
             {
 
 
@@ -197,10 +202,10 @@ class TaskController extends Controller
                 $task->task_date_time=$task->task_date_time;
             }
             $task->is_completed=$request->is_completed;
-            $task->user_id=1;
+            $task->user_id=Auth::id();
             $task->save();
 
-             if (!is_null($request->task_image)){
+             if (isset($request->task_image)){
 
                     if (count($request->task_image) > 0){
                           $i = 0;
